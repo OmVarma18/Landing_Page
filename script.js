@@ -1,21 +1,26 @@
-document.getElementById("waitlist-form").addEventListener("submit", function(event) {
-    event.preventDefault(); // Prevent page reload
+let url = "https://script.google.com/macros/s/AKfycbxxth2gu8FbE5wUlNDFoT32a2NeyfKjnDvzybHJRm0bWJ-ytnYofaUc7N4Hi867R4S6/exec";
 
-    // Get values
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
+// ✅ Correctly select the form
+let form = document.querySelector("#waitlist-form");
 
-    // Google Apps Script URL
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxdp-gf8fNdwXJivRbf0j9xWnhfABw2jQ9JX7eVsxTFoPlglPDNfAg2QHMQdeitkzIz/exec";
+if (!form) {
+    console.error("❌ Form element not found!");
+} else {
+    form.addEventListener("submit", (e) => {
+        e.preventDefault(); // ✅ Prevent page reload
 
-    fetch(scriptURL, {
-        method: "POST",
-        body: JSON.stringify({ name: name, email: email }),
-        headers: { "Content-Type": "application/json" }
-    })
-    .then(response => {
-        document.getElementById("success-message").style.display = "block";
-        document.getElementById("waitlist-form").reset();
-    })
-    .catch(error => console.error("Error:", error));
-});
+        let d = new FormData(form); // ✅ Get form data
+
+        fetch(url, {
+            method: "POST",
+            body: d
+        })
+        .then(res => res.text()) // ✅ Parse response as text
+        .then(finalRes => {
+            console.log("✅ Success:", finalRes);
+            document.getElementById("success-message").style.display = "block"; // ✅ Show success message
+            form.reset(); // 🔥 ✅ Clear the form fields after submission
+        })
+        .catch(error => console.error("❌ Error:", error)); // ✅ Catch errors
+    });
+}
